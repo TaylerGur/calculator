@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru" ng-app="calculatorApp">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/jquery-ui.min.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">  
+    <link rel="stylesheet" href="css/main.css">
+    <script src="js/lib/jquery-3.1.1.min.js"></script>
+    <script src="js/lib/jquery-ui.min.js"></script>
+     <script src="js/lib/angular.js"></script>
+    <script src="js/module.js"></script>
+    <script src="js/service.js"></script>
+    <script src="js/controler.js"></script>
+  
+    <title>Калькулятор</title>
+
+</head>
+<body>
+       <div class="container-fluid">
+          <div class="row" ng-controller="contrCalc">
+              <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-12 col-xs-12  start_step" >
+                          <h4> Шаг {{step[pos].id}} из 3 {{step[pos].title}}</h4> 
+              </div>
+              <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-12 col-xs-12 " ng-hide="start_step[pos]">
+                  <div class="row content" >
+                      
+                      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" >
+                         {{$index}}
+                          <h4> Выберете серию </h4>
+                                 <select class="form-control" ng-model="id_section" ng-change="changeSection()">
+                                    <option ng-repeat="section in data" value={{section.id_series}} >            {{section.name_series}}
+                                     </option>
+                                      
+                                </select>
+                             
+                      </div>
+                      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 purpose">
+                          <h4 ng-show="id_section">Назначение</h4>
+                          <label ng-show='wall()'>
+                              <input type='checkbox' ng-model='wall_checked' ng-change="purpose_checked('wall')" >Стена</label>
+                          <label ng-show="floor()">
+                              <input type='checkbox' ng-model="floor_checked" ng-change="purpose_checked('floor')" >Пол</label>
+                      </div>
+                      
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" ng-if="floor_checked || wall_checked">
+                          <h4>Варианты раскладки</h4>
+                          <div class="row">
+                              
+                              <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 variant" ng-show="wall_checked">
+                                   <h5>Стена</h5>
+                                   <label><input type='radio' name="wall" checked ng-click="wall_radio($event)" value="1">Прямоугольная</label>
+                                   <label><input type='radio' name="wall" ng-click="wall_radio($event)" value="0">Диагональная</label>
+                              </div>
+                              <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 variant" ng-show="floor_checked">
+                                   <h5>Пол</h5> 
+                                   <label><input type='radio' name="floor" checked ng-click="floor_radio($event)" value="1">Прямоугольная</label>
+                                   <label><input type='radio' name="floor" ng-click="floor_radio($event)" value="0">Диагональная</label>
+                              </div>
+                              
+                          </div>
+                      </div>
+                      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 border-red">
+                           
+                      </div>
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 seam" ng-if="floor_checked || wall_checked">
+                           <h4>Ширина шва между плитками</h4>
+                           <label><input type='radio' name="seam" value='1.5' checked ng-click="seam($event)">1,5мм</label>
+                           <label><input type='radio' name="seam" ng-click="seam($event)" value='2'>2мм</label>
+                           <label><input type='radio' name="seam" ng-click="seam($event)" value='2.5'>2,5мм</label>
+                           <label><input type='radio' name="seam" ng-click="seam($event)" value='3'>3мм</label>
+                           <label><input type='radio' name="seam" ng-click="seam($event)"  value='3.5'>3,5мм</label>
+                           <label><input type='radio' name="seam" ng-click="seam($event)" value='4'>4мм</label>
+                      </div>
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" ng-if="floor_checked || wall_checked">
+                                <h4>Задайте размеры</h4><h5>(* учтите, что все размеры указаны в сантиметрах!)</h5>
+                      </div>
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 indicator" ng-show="floor_checked">
+                         <h5>Пол</h5>
+                          <div class="label_slider">
+                              <div><h4>Длина пола</h4></div> 
+                              <div id="slider_length_floor" ng-mouseleave='valueS($event, "valLF")'> </div>
+                              <div><input id="value_length_floor" value="0.0" ng-keyup="input_keyup($event)"> </div>
+                              
+                          </div>
+                          <div class="label_slider">
+                              <div><h4>Ширина пола</h4></div> 
+                              <div id="slider_width_floor" ng-mouseleave='valueS($event, "valWF")'></div>
+                             
+                              <div><input id="value_width_floor" value="0.0" ng-keyup="input_keyup($event)"></div> 
+                          </div>
+                      </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 indicator" id="wall_list" ng-show="wall_checked">
+                          <h5>Стена</h5>
+                          <div class="label_slider">
+                              <div><h4>Высота потолка</h4></div> 
+                              <div id="slider_height_wall" ng-mouseleave='valueS($event, "valHW")'></div>
+                             
+                               <div><input id="value_heigth_wall" value="0.0" ng-keyup="input_keyup($event)"></div> 
+                          </div>
+                          <div class="label_slider" >
+                              <div><h4>Ширина стены №1</h4></div> 
+                              <div id="slider_width_wall1" ng-mouseleave='valueS($event, "valWW1")'></div>
+                              <div><input id="value_width_wall1" value="0.0" ng-keyup="input_keyup($event)"></div> 
+                          </div>
+
+                      </div>
+                      <div class="col-lg-offset-6 col-sm-offset-4  col-md-offset-6 col-lg-3 col-md-3 col-sm-4 col-xs-6" ng-show='wall_checked'>
+                          <button class="btn  btn-warning btn-block" ng-click="delete_label()" ng-hide="min_count_width()">Удалить стену</button>
+                      </div>
+                      <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6" ng-show='wall_checked'>
+                          <button class="btn  btn-primary btn-block" ng-click="add_label()" ng-hide="max_count_width()">Добавить стену</button>
+                      </div>
+                      <div class="col-lg-12 col-md-6 col-sm-6 col-xs-6"></div>
+                      
+
+                      
+                  </div>              
+              </div>
+              <div class="col-lg-offset-3 col-lg-2 col-md-6 col-sm-6 col-xs-6 dad_step" ng-hide="dad_step[pos]">
+                  Шаг 2 dad
+                  <ul>
+                      {{save_data}}
+                      
+                  </ul>
+              </div>
+              <div class="col-lg-offset-3 col-lg-2 col-md-6 col-sm-6 col-xs-6 finish_step" ng-hide="finish_step[pos]">
+                   Шаг 3 финиш
+              </div>
+              <div class=" col-lg-12 col-md-12 col-sm-12 col-xs-12"></div>
+              <div class="col-lg-offset-3  col-md-offset-3 col-lg-2 col-md-2 col-sm-4 col-xs-12 buttons">
+                          <button class="btn  btn-default btn-block" ng-click="prev_step()" ng-hide="!start_step[pos]">Назад</button>
+              </div>
+              <div class="col-lg-2 col-md-2 col-sm-4 col-xs-12 buttons" >
+                          <button class="btn btn-danger btn-block">Очистить</button>
+              </div>
+              <div class="col-lg-2 col-md-2 col-sm-4 col-xs-12 buttons" >
+                          <button class="btn btn-success btn-block" ng-click="next_step(pos)" ng-hide="!finish_step[pos]">Далее</button>
+                      </div>
+              
+             
+           </div>
+       </div>
+    
+<!--
+   
+-->
+<script type="text/javascript">
+     
+
+    $("#slider_width_wall1").slider({
+        value:0,
+        min:0,
+        max:1000,
+        step:0.1,
+        slide: function(event,ui){
+            $('#value_width_wall1').val(ui.value);
+        }
+    });
+    
+     $("#slider_height_wall").slider({
+        value:0,
+        min:0,
+        max:1000,
+        step:0.1,
+        slide: function(event,ui){
+            $('#value_heigth_wall').val(ui.value );
+        }
+    });
+    $("#slider_width_floor").slider({
+        value:0,
+        min:0,
+        max:1000,
+        step:0.1,
+        slide: function(event,ui){
+            $('#value_width_floor').val(ui.value );
+        }
+    });
+    $("#slider_length_floor").slider({
+        value:0,
+        min:0,
+        max:1000,
+        step:0.1,
+        slide: function(event,ui){
+            $('#value_length_floor').val(ui.value);
+        }
+    });
+
+    
+    </script>
+   
+</body>
+</html>
