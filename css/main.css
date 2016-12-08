@@ -1,132 +1,132 @@
- *{
-            
-            padding: 0;
-            margin: 0;
-        }
- 
-        h3,h4,h5{
-            color: #30688b;
-        }
+*{
+
+    padding: 0;
+    margin: 0;
+}
+
+h3,h4,h5{
+    color: #30688b;
+}
 /*
-        input[type='radio'], input[type='checkbox']{
-            font-weight: normal;
-        }
+input[type='radio'], input[type='checkbox']{
+font-weight: normal;
+}
 */
-        label{
-            font-weight: normal;
-        }
-        body{
-      
-
-              font-weight: normal;
-              color: #091d36;
-
-        }
-        .start_step{
-            
-            text-align: center;
-            background-color:#5e83ba;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 25px;
-            color:white;
-            border: 1px solid #091d36;
-            
-        }
-        .start_step > h4{
-	        color:white;
+label{
+    font-weight: normal;
 }
-        
-        .content > div{
-            margin-bottom: 20px;
-        }
-        .purpose > label{
-	        margin-top: 5px;
-            margin-right: 20px;
-        }
-        .seam > label{
-            margin-left: 20px;
-            font-weight: normal;
-        }
-        .variant > label {
-            margin-left: 15px;
-            font-weight: normal;
-        }
-        .variant {
-	        padding-left:25px;
-         
+body{
+
+
+    font-weight: normal;
+    color: #091d36;
+
 }
-       
-        .label_slider{
-            margin-top: 10px;
-/*            padding-left: 25px;*/
-            padding: 10px;
-            overflow: hidden;
-            display: flex;
-            border: 1px solid #3a4e7a;
-            align-content: space-between;
-/*            background-color: white;*/
-/*             background-color: #cacad6;*/
-/*             background-color: #c2d2e9;*/
-            border-radius: 5px;
-        }
-        .label_slider h4{
-            padding: 0;
-	        width: 180px;
-            margin: 0;
-            padding-top: 2px;
-            padding-right: 15px;
-      
-     
-        }
-        .label_slider > div:nth-child(2){
-        margin-top:6px; 
-            width: 100%;
-	     
-        }
-       
-        .label_slider > div:nth-child(3) input {
-            text-align: right;
-	        margin: 1px 0 0px 15px;
-            width: 60px;
-         
-        }
+.start_step{
 
-	
+    text-align: center;
+    background-color:#5e83ba;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 25px;
+    color:white;
+    border: 1px solid #091d36;
 
-        .border-red {
-
-/*	    border: 1px solid red;    */
-    }
-        .ui-widget.ui-widget-content {
-	        border: 1px solid  #3a4e7a;
-/*            background: red;*/
-/*            width: 100%;*/
-            
-    }
-        .btn-primary{
-            background-color: #5e83ba;
-        }
-        .btn-danger,  
-        .btn-success, 
-        .btn-default, 
-        .btn-primary, 
-        .form-control, 
-        .form-control:focus {
-	    
-
-        
-	        border: 1px solid #3a4e7a;
-            
 }
-        
+.start_step > h4{
+    color:white;
+}
 
-        
-    .ui-state-default:focus {
-	    outline: none;
-        background-color: #5e83ba;    
-        border: 1px solid  #3a4e7a;
+.content > div{
+    margin-bottom: 20px;
+}
+.purpose > label{
+    margin-top: 5px;
+    margin-right: 20px;
+}
+.seam > label{
+    margin-left: 20px;
+    font-weight: normal;
+}
+.variant > label {
+    margin-left: 15px;
+    font-weight: normal;
+}
+.variant {
+    padding-left:25px;
+
+}
+
+.label_slider{
+    margin-top: 10px;
+    /*            padding-left: 25px;*/
+    padding: 10px;
+    overflow: hidden;
+    display: flex;
+    border: 1px solid #3a4e7a;
+    align-content: space-between;
+    /*            background-color: white;*/
+    /*             background-color: #cacad6;*/
+    /*             background-color: #c2d2e9;*/
+    border-radius: 5px;
+}
+.label_slider h4{
+    padding: 0;
+    width: 180px;
+    margin: 0;
+    padding-top: 2px;
+    padding-right: 15px;
+
+
+}
+.label_slider > div:nth-child(2){
+    margin-top:6px; 
+    width: 100%;
+
+}
+
+.label_slider > div:nth-child(3) input {
+    text-align: right;
+    margin: 1px 0 0px 15px;
+    width: 60px;
+
+}
+
+
+
+.border-red {
+
+    /*	    border: 1px solid red;    */
+}
+.ui-widget.ui-widget-content {
+    border: 1px solid  #3a4e7a;
+    /*            background: red;*/
+    /*            width: 100%;*/
+
+}
+.btn-primary{
+    background-color: #5e83ba;
+}
+.btn-danger,  
+.btn-success, 
+.btn-default, 
+.btn-primary, 
+.form-control, 
+.form-control:focus {
+
+
+
+    border: 1px solid #3a4e7a;
+
+}
+
+
+
+.ui-state-default:focus {
+    outline: none;
+    background-color: #5e83ba;    
+    border: 1px solid  #3a4e7a;
 }
 .buttons{
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
