@@ -20,15 +20,15 @@
         <div class="container-fluid">
             <div class="row" ng-controller="contrCalc">
                 <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-12 col-xs-12  start_step" >
-                    <h4> Шаг {{step[pos].id}} из 3 {{step[pos].title}}</h4> 
+                    <h4> Шаг {{step[formData.pos].id}} из 3 {{step[formData.pos].title}}</h4> 
                 </div>
-                <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-12 col-xs-12 " ng-hide="start_step[pos]">
+                <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-12 col-xs-12 " ng-hide="formData.start_step[formData.pos]">
                     <div class="row content" >
 
                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" >
 
                             <h4> Выберете серию </h4>
-                            <select class="form-control" ng-model="id_section" ng-change="sectionChange()">
+                            <select class="form-control" ng-model="formData.id_section" ng-change="sectionChange()">
                                 <option ng-repeat="section in data" value={{section.id_series}} ng-selected="select_LS('section',{{$index}})" >            {{section.name_series}}
                                 </option>
 
@@ -36,7 +36,7 @@
 
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 purpose">
-                            <h4 ng-show="id_section">Назначение</h4>
+                            <h4 ng-show="formData.id_section">Назначение</h4>
                             <label ng-show='wall()'>
                                 <input type='checkbox' ng-model='wall_checked'  >Стена</label>
                             <label ng-show="floor()">
@@ -80,14 +80,14 @@
                             <div class="label_slider">
                                 <div><h4>Длина пола</h4></div> 
                                 <div id="slider_length_floor" ng-mouseleave='valueS($event, "valLF")'> </div>
-                                <div><input id="value_length_floor" value="{{val_length_f}}" ng-keyup="input_keyup($event)"> </div>
+                                <div><input id="value_length_floor" value="{{formData.val_length_f}}" ng-keyup="input_keyup($event,'#value_length_floor')"> </div>
 
                             </div>
                             <div class="label_slider">
                                 <div><h4>Ширина пола</h4></div> 
                                 <div id="slider_width_floor" ng-mouseleave='valueS($event, "valWF")'></div>
 
-                                <div><input id="value_width_floor" value="{{val_width_f}}" ng-keyup="input_keyup($event)"></div> 
+                                <div><input id="value_width_floor" value="{{formData.val_width_f}}" ng-keyup="input_keyup($event,'#value_width_floor')"></div> 
                             </div>
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 indicator" id="wall_list" ng-show="wall_checked">
@@ -96,12 +96,12 @@
                                 <div><h4>Высота потолка</h4></div> 
                                 <div id="slider_height_wall" ng-mouseleave='valueS($event, "valHW")'></div>
 
-                                <div><input id="value_heigth_wall" value="{{val_height_w}}" ng-keyup="input_keyup($event)"></div> 
+                                <div><input id="value_heigth_wall" value="{{formData.val_height_w}}" ng-keyup="input_keyup($event,'#value_heigth_wall')"></div> 
                             </div>
                             <div class="label_slider" >
                                 <div><h4>Ширина стены №1</h4></div> 
                                 <div id="slider_width_wall1" ng-mouseleave='valueS($event, "valWW1")'></div>
-                                <div><input id="value_width_wall1" value="{{val_width_w1}}" ng-keyup="input_keyup($event)"></div> 
+                                <div><input id="value_width_wall1" value="{{formData.val_width_w1}}" ng-keyup="input_keyup($event,'#value_width_wall1')"></div> 
                             </div>
 
                         </div>
@@ -117,77 +117,31 @@
 
                     </div>              
                 </div>
-                <div class="col-lg-offset-3 col-lg-2 col-md-6 col-sm-6 col-xs-6 dad_step" ng-hide="dad_step[pos]">
+                <div class="col-lg-offset-3 col-lg-2 col-md-6 col-sm-6 col-xs-6 dad_step" ng-hide="formData.dad_step[formData.pos]">
                     Шаг 2 dad
                     <ul>
                         {{save_data}}
 
                     </ul>
                 </div>
-                <div class="col-lg-offset-3 col-lg-2 col-md-6 col-sm-6 col-xs-6 finish_step" ng-hide="finish_step[pos]">
+                <div class="col-lg-offset-3 col-lg-2 col-md-6 col-sm-6 col-xs-6 finish_step" ng-hide="formData.finish_step[formData.pos]">
                     Шаг 3 финиш
                 </div>
                 <div class=" col-lg-12 col-md-12 col-sm-12 col-xs-12"></div>
                 <div class="col-lg-offset-3  col-md-offset-3 col-lg-2 col-md-2 col-sm-4 col-xs-12 buttons">
-                    <button class="btn  btn-default btn-block" ng-click="prev_step()" ng-hide="!start_step[pos]">Назад</button>
+                    <button class="btn  btn-default btn-block" ng-click="prev_step()" ng-hide="!formData.start_step[formData.pos]">Назад</button>
                 </div>
                 <div class="col-lg-2 col-md-2 col-sm-4 col-xs-12 buttons" >
                     <button class="btn btn-danger btn-block" ng-click="destroy()">Начать заново;)</button>
                 </div>
                 <div class="col-lg-2 col-md-2 col-sm-4 col-xs-12 buttons" >
-                    <button class="btn btn-success btn-block" ng-click="next_step(pos)" ng-hide="!finish_step[pos]">Далее</button>
+                    <button class="btn btn-success btn-block" ng-click="next_step(formData.pos)" ng-hide="!formData.finish_step[formData.pos]">Далее</button>
                 </div>
 
 
             </div>
         </div>
 
-        <!--
-
--->
-        <script type="text/javascript">
-
-
-            $("#slider_width_wall1").slider({
-                value:0,
-                min:0,
-                max:1000,
-                step:0.1,
-                slide: function(event,ui){
-                    $('#value_width_wall1').val(ui.value);
-                }
-            });
-
-            $("#slider_height_wall").slider({
-                value:0,
-                min:0,
-                max:1000,
-                step:0.1,
-                slide: function(event,ui){
-                    $('#value_heigth_wall').val(ui.value );
-                }
-            });
-            $("#slider_width_floor").slider({
-                value:0,
-                min:0,
-                max:1000,
-                step:0.1,
-                slide: function(event,ui){
-                    $('#value_width_floor').val(ui.value );
-                }
-            });
-            $("#slider_length_floor").slider({
-                value:0,
-                min:0,
-                max:1000,
-                step:0.1,
-                slide: function(event,ui){
-                    $('#value_length_floor').val(ui.value);
-                }
-            });
-
-
-        </script>
 
     </body>
 </html>
