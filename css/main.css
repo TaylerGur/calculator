@@ -7,6 +7,9 @@
 h3,h4,h5{
     color: #30688b;
 }
+li{
+list-style: none;
+}
 /*
 input[type='radio'], input[type='checkbox']{
 font-weight: normal;
@@ -126,3 +129,391 @@ body{
 .buttons{
     margin-bottom: 10px;
 }
+
+/*---------------STEP2----------------------------*/
+
+
+.carousel{
+    position: relative;
+    margin: 20px 0;
+    border: 1px solid  #3a4e7a;
+    display: flex;
+/*    align-content: center;*/
+}
+.carousel > div{
+    width: 20px;
+   display: flex;
+    justify-content: flex-start;
+}
+.carousel .carousel_list {
+    margin: 10px 0;
+	width: 100%;
+/*    border: 1px solid red;*/
+    padding: 10px 0;
+    overflow: hidden;
+}
+.carousel > div > img{
+    width: 13px;
+    position: absolute;
+    top: 50%;
+    margin-top: -10px;
+/*    height: 20px;*/
+ 
+}
+.carousel_list ul img{
+	height: 71px;
+    padding: 0;
+    margin: 0;
+    width: 143px;
+}
+.carousel_list ul{
+    -webkit-transition: all 0.3s ease-out 0.2s;
+     -moz-transition: all 0.3s ease-out 0.2s;
+     -o-transition: all 0.3s ease-out 0.2s;
+     transition: all 0.3s ease-out 0.2s;
+/*    overflow: hidden;*/
+	display: flex;
+    width: 10000px;
+    margin: 0;
+    position: relative;
+/*    left: +152px;*/
+  left: 0;
+}
+.carousel_list ul li{
+    padding: 5px;
+    position: relative;
+    margin-bottom: 27px;
+
+}
+.carousel_list ul li > div{
+    background-image: url(../img/M25.png) ;
+    background-size: cover;
+    height: 25px;
+	width: 25px;
+    position: absolute;
+    bottom: -27px;
+    border: 1px solid #3a4e7a;
+}
+
+
+
+
+
+
+
+
+.map {
+     overflow-y: hidden;
+     border:1px dotted black;
+
+}
+.button_group{
+    margin: 20px 0;
+    
+}
+.map > div:first-child{
+   display: flex;
+}
+.map_elem_d {
+    overflow: hidden;
+    margin-left: 51px;
+
+    margin-top: -10px;
+    display: flex;
+    position: relative;
+}
+.map_rows_d {
+    height: auto;
+    margin-bottom: -54px;
+}
+.map_rows_d:nth-child(even) > div {
+    background: red;
+    position: relative;
+    top: -32px;
+    left:-6x;
+    z-index: 6;
+}
+.map_col_d {
+    border-right: 1px dotted black;	
+    border-top: 1px dotted black;	
+    width: 45px;
+    height: 45px;
+    z-index: 6;
+    position: relative;
+    background: blue;
+    margin-left: -13px;
+    margin-top: 19px;
+    transform: rotate(45deg);
+    box-sizing: border-box;
+}
+.map_x_d, .map_y_d, .axis_d, .map_y_d .map_label_d{
+	color: white;
+    overflow: hidden;
+    background-color:#5e83ba;
+    z-index: 10;
+    position: relative;
+}
+.map_y_d {
+    
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60px;
+    bottom:0;
+}
+.axis_d {
+/*	 width: 100%;*/
+}
+.map_y_d .map_label_d{
+/*    top:50%;*/
+    bottom:80px;
+    left:-50px;
+    height: 30px;
+    width: 190px;
+    position: absolute;
+    display: inline-block;
+    transform: rotate(-90deg);
+    z-index: 100;
+}
+
+.map_y_d .axis_d > div {
+    padding: 6px;
+    padding-left: 10px;
+}
+.map_y_d .axis_d > div:first-child {
+    padding:0px;
+    padding-left: 10px;
+    padding-bottom: 0px;
+    margin-top: -3px;
+    margin-bottom: -2px;
+
+}
+
+.map_x_d {
+	display: flex;
+    z-index: 100;
+
+}
+
+.map_x_d .axis_d div {
+	display: inline-block;
+    padding-left: 12px;
+    padding-right:11px;
+    padding-top: 10px;
+   
+}
+.map_x_d .axis_d > div:first-child {
+
+    padding:0px;
+    padding-top: 10px;
+    padding-left: 0px;
+    padding-right: 6px;
+  
+}
+
+
+.map_x_d .map_label_d{
+	margin-left: 5px;
+}
+
+.eraser_d {
+	width:60px;
+    height: 60px;
+    background-color: white;
+
+}
+.eraser_d > div{
+    margin: 10px 14px; 
+    width: 32px;
+    height: 32px;
+	background-image: url(../img/eraser.png);
+    background-position: center center;
+    background-size: cover;
+}
+
+
+.map_x_d .map_label_d + div > div {
+    display: inline-block;
+}
+.map_x_d .map_label_d {
+	 transform: none;
+    position:relative;
+/*    left: 100px;*/
+}
+.map_overflow_x {
+    position: absolute;
+    right: 0;
+    z-index: 100;
+/*	width: 100px;*/
+    border:1px solid grAY;
+    height: 100%;
+    background: linear-gradient(-45deg,rgba(0, 0, 0, 0) 48%,rgba(255, 255, 255,0.5) 50%,rgba(0, 0, 0, 0) 52%);
+     background-size: 1em 1em;
+ 
+}
+.map_overflow_y {
+    position: absolute;
+    left: -3px;
+    bottom: 0;
+    z-index: 9;
+    border:1px solid grAY;
+    width: 110%;
+    background: linear-gradient(-45deg,rgba(0, 0, 0, 0) 48%,rgba(255, 255, 255,0.5) 50%,rgba(0, 0, 0, 0) 52%);
+     background-size: 1em 1em;
+
+    
+}
+
+
+
+.map_h:before {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	left: 0;
+      z-index: 9;
+
+             border:1px solid gray; 
+
+     background: linear-gradient(-45deg,rgba(0, 0, 0, 0) 48%,rgba(255, 255, 255,0.7) 50%,rgba(0, 0, 0, 0) 52%);
+      background-size: 1em 1em;
+	width: 100%;
+/*	height: 20px;*/
+}
+.map_h:after {
+      z-index: 11;
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+
+         border:1px solid gray; 
+    background: linear-gradient(-45deg,rgba(0, 0, 0, 0) 48%,rgba(255, 255, 255,0.7) 50%,rgba(0, 0, 0, 0) 52%);
+    background-size: 1em 1em;
+/*	width: 42px;*/
+	height: 100%;
+}
+
+
+
+
+
+.map_elem_p {
+    overflow: hidden;
+    display: flex;
+    position: relative;
+}
+
+.map_col_p {
+    border-right: 1px dotted black;	
+    border-top: 1px dotted black;	
+    width: 45px;
+    height: 45px;
+    z-index: 6;
+/*    position: relative;*/
+    background: blue;
+/*    margin-left: -13px;*/
+/*    margin-top: 19px;*/
+
+    box-sizing: border-box;
+}
+.map_x_p, .map_y_p, .axis_p, .map_y_p .map_label_p{
+	color: white;
+    overflow: hidden;
+    background-color:#5e83ba;
+    z-index: 10;
+    position: relative;
+}
+.map_y_p {
+    width: 60px;
+
+}
+.map_y_p .map_label_p{
+/*    top:50%;*/
+    bottom:80px;
+    left:-50px;
+    height: 30px;
+    width: 190px;
+    position: absolute;
+    display: inline-block;
+    transform: rotate(-90deg);
+    z-index: 100;
+}
+
+.map_y_p .axis_p > div {
+    padding: 12.5px;
+    padding-left: 10px;
+}
+/*
+.map_y_p .axis_p > div:first-child {
+    padding:0px;
+    padding-left: 10px;
+    padding-bottom: 0px;
+    margin-top: -3px;
+    margin-bottom: -2px;
+
+}
+*/
+
+.map_x_p {
+	display: flex;
+    z-index: 100;
+
+}
+
+.map_x_p .axis_p div {
+	display: inline-block;
+/*    padding-left: 12px;*/
+/*    padding-right:11px;*/
+    
+    
+    
+    padding: 10px 18px 0 18px;
+/*    padding-top: 10px;*/
+}
+/*
+.map_x_p .axis_p > div:first-child {
+
+    padding:0px;
+    padding-top: 10px;
+    padding-left: 0px;
+    padding-right: 6px;
+  
+}
+*/
+
+
+.map_x_p .map_label_p{
+	margin-left: 5px;
+}
+
+.eraser_p {
+	width:60px;
+    height: 60px;
+    background-color: white;
+ 
+    
+}
+.eraser_p > div{
+    margin: 10px auto; 
+    width: 32px;
+    height: 32px;
+	background-image: url(../img/eraser.png);
+    background-position: center center;
+    background-size: cover;
+}
+
+
+
+.map_x_p .map_label_p {
+	 transform: none;
+    position:relative;
+/*    left: 100px;*/
+}
+
+
+
+
+
+
+

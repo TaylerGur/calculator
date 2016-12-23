@@ -14,7 +14,6 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
         var data = JSON.parse(data);
         return data;
     }
-
     if(!angular.isUndefined($scope.getLS().length_floor)) $scope.formData.val_length_f = $scope.getLS().length_floor;
     if(!angular.isUndefined($scope.getLS().width_floor)) $scope.formData.val_width_f = $scope.getLS().width_floor;
     if(!angular.isUndefined($scope.getLS().height_wall )) $scope.formData.val_height_w = $scope.getLS().height_wall;
@@ -22,12 +21,13 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
     if(!angular.isUndefined($scope.getLS().width_wall2 )) $scope.formData.val_width_w2 = $scope.getLS().width_wall2;
     if(!angular.isUndefined($scope.getLS().width_wall3 )) $scope.formData.val_width_w3 = $scope.getLS().width_wall3;
     if(!angular.isUndefined($scope.getLS().width_wall4 )) $scope.formData.val_width_w4 = $scope.getLS().width_wall4;
-    if(!angular.isUndefined(localStorage.getItem('pos') )) $scope.formData.pos = localStorage.getItem('pos');
+    if(!angular.isUndefined(localStorage.getItem('pos') ) && localStorage.getItem('pos') != null) $scope.formData.pos = localStorage.getItem('pos');
     if(!angular.isUndefined($scope.getLS().floor_radio )) {
         $scope.formData.floor_radio_s = $scope.getLS().floor_radio;
         $scope.save_data.floor_radio = $scope.getLS().floor_radio;
     }
     if(!angular.isUndefined($scope.getLS().wall_radio )) { 
+        
         $scope.formData.wall_radio_s = $scope.getLS().wall_radio;
         $scope.save_data.wall_radio = $scope.getLS().wall_radio;
     }
@@ -36,6 +36,7 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
         $scope.save_data.seam = $scope.getLS().seam;  
     } 
 
+   
     if($scope.getLS().section != undefined) $scope.formData.id_section = $scope.getLS().section;
 
     $scope.select_LS = function(who,value){
@@ -44,22 +45,23 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
                 if(value == $scope.formData.id_section){
                     return true; 
                 }
-
-            case 'wall':
+                break;
+            case 'wall' :
                 if(value == $scope.formData.wall_radio_s){
                     return true; 
+                    
                 }
-
-            case 'floor':
+                break;
+            case 'floor' :
                 if(value == $scope.formData.floor_radio_s){
                     return true; 
                 }
-
+                break;
             case 'seam':
                 if(value == $scope.formData.seam_s){
                     return true; 
                 }
-
+                break;
             default:
                 return false;
         }
@@ -104,12 +106,14 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
 
     $scope.wall = function(){
         if($scope.formData.id_section != ''){
-            if($scope.data[$scope.formData.id_section].type_series == 0 || $scope.data[$scope.formData.id_section].type_series == 2 )return true;       return false;            
+            if($scope.data[$scope.formData.id_section].type_series == 0 || $scope.data[$scope.formData.id_section].type_series == 2 )return true;       
+            return false;            
         }
     }
     $scope.floor = function(){
         if($scope.formData.id_section != false){
-            if($scope.data[$scope.formData.id_section].type_series == 1 || $scope.data[$scope.formData.id_section].type_series == 2)return true;  return false;
+            if($scope.data[$scope.formData.id_section].type_series == 1 || $scope.data[$scope.formData.id_section].type_series == 2)return true;  
+            return false;
         }
     }
 
@@ -138,7 +142,7 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
     $scope.next_step = function(){
 
         if($scope.formData.pos == 0){
-            if($scope.formData.id_section == false){
+            if($scope.formData.id_section === false){
                 alert('Вы не выбрали секцию!');
                 return;
             }
@@ -173,18 +177,29 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
             $scope.save_data.section = $scope.formData.id_section;
             $scope.save_data.wall_checked = $scope.wall_checked;
             $scope.save_data.floor_checked = $scope.floor_checked;
-
+            
         }
+        $scope.save_data.index_width = $scope.index_width;
         var json_data = JSON.stringify($scope.save_data);
         localStorage.setItem('data', json_data);
+        if($scope.formData.pos == 0){
+            $scope.step2();
+        }
         $scope.formData.pos++;  
         localStorage.setItem('pos', $scope.formData.pos);
     }
 
     $scope.prev_step = function(){
+        if($scope.formData.pos == 1){
+            for( i = 0; i < 6; i++){
+                angular.element("#" + $scope.list_id_show_map[i]).empty();
+            }
+
+        }
         $scope.formData.pos--;
         localStorage.setItem('pos', $scope.formData.pos);
 
+        
 
     }
     $scope.max_count_width = function(){
@@ -208,7 +223,10 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
 
         var slide = angular.element("<div id='slider_width_wall"+ $scope.index_width +"'></div>");
         div.append(slide);
-
+        function getIndex(index){
+            this.index = index;
+        }
+        var Index = new getIndex($scope.index_width);
         var input_value = angular.element("<input id='value_width_wall"+ $scope.index_width +"' value='"+ $scope.formData['val_width_w' + $scope.index_width] +"'>");
         input_value.on('keyup', function(event){
             $(event.currentTarget).parent().prev().slider({
@@ -230,8 +248,10 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
             min:0,
             max:1000,
             step:0.1,
+            v: $scope.index_width,
             slide: function(event,ui){
-                $('#value_width_wall' + $scope.index_width).val(ui.value);
+                $('#value_width_wall' + Index.index).val(ui.value);
+//                alert($scope.index_width);
             }
         });
 
@@ -262,6 +282,7 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
     }
     $scope.destroy = function(){
         localStorage.removeItem('data');
+        localStorage.removeItem('pos');
 
         window.location.reload();
 
@@ -310,5 +331,198 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
         }
     });
 
+    $scope.step2 = function(){
+        if(!angular.isUndefined(localStorage.getItem('data'))){
+            $scope.step2_data = JSON.parse(localStorage.getItem('data'));
 
+            if($scope.step2_data.floor_checked == 1){
+                $scope.show_map('f');
+            }
+            else{
+                $scope.show_map('w');
+            }
+            //        $scope.carousel_list = function(){
+            //            if()
+            //        }; 
+
+
+            $scope.counter_c = 0;
+
+            $scope.left_carousel = function(){
+                if($scope.counter_c > 0){
+                    var counter  = parseInt(angular.element('.carousel_list > ul').css('left')) -152;
+                    angular.element('.carousel_list > ul').css({
+                        position:'relative',
+                        left:parseInt(+154 + parseInt(angular.element('.carousel_list > ul').css('left'))) + 'px'
+                    });
+                    $scope.counter_c--; 
+                }
+            }
+            $scope.right_carousel = function(){
+                //        alert(angular.element('.carousel_list > ul').children().toArray().length);
+                if($scope.counter_c < angular.element('.carousel_list > ul').children().toArray().length-4){
+                    angular.element('.carousel_list > ul').css({
+                        position:'relative',
+                        left:parseInt(-154 + parseInt(angular.element('.carousel_list > ul').css('left'))) + 'px'
+                    });
+                    $scope.counter_c++;
+                }    
+            } 
+
+            $scope.list_values = [$scope.step2_data.length_floor,$scope.step2_data.width_floor, $scope.step2_data.height_wall,$scope.step2_data.width_wall1,$scope.step2_data.width_wall2,$scope.step2_data.width_wall3,$scope.step2_data.width_wall4,];
+
+            $scope.wah = [
+                [$scope.step2_data.length_floor,$scope.step2_data.width_floor],
+                [$scope.step2_data.height_wall,$scope.step2_data.width_wall1],
+                [$scope.step2_data.height_wall,$scope.step2_data.width_wall2],
+                [$scope.step2_data.height_wall,$scope.step2_data.width_wall3],
+                [$scope.step2_data.height_wall,$scope.step2_data.width_wall4]
+
+            ];
+
+//            alert(angular.element('head').html());
+            $scope.list_id_show_map = ['floor','wall1','wall2','wall3','wall4'];    
+            for(i = 0; i < 5; i++){
+
+
+                var parent = angular.element("#" + $scope.list_id_show_map[i]);
+                var k_len = Math.ceil($scope.wah[i][0]/$scope.data[$scope.step2_data.section].height);
+                var j_len = Math.ceil($scope.wah[i][1]/$scope.data[$scope.step2_data.section].width);
+                parent.children(0).css('position', 'relative');
+                
+                
+                if(( i < 1 && $scope.step2_data.floor_radio == 0) || ( i > 0 && $scope.step2_data.wall_radio == 0)){
+                    var mas_class = ['map_y_d','map_label_d','axis_d', 'map_elem_d','map_x_d','eraser_d', 'map_label_d', 'axis_d'];
+                    parent.append("<div><div class='" + mas_class[0] + "' ><div class='" + mas_class[1] + "'> Расположить плитку рядами </div><div class='" + mas_class[2] + "'></div></div><div  class='" + mas_class[3] + "'><div class='map_h'></div></div></div><div class='" + mas_class[4] + "'><div class='" + mas_class[5] + "'><div></div></div><div><div class='" + mas_class[6] +"'>Расположить плитку рядами</div><div class='" + mas_class[7] + "'> </div></div></div>");
+
+
+                    
+
+//                    alert('j_len - ' + j_len);
+//                    alert('k_len - ' + k_len);
+                    for(x = 0; x < j_len*2; x++){
+                        parent.find('.map_x_d .axis_d').append('<div>X</div>');
+                    }
+
+                    for(y = 0; y < k_len*2; y++){
+                        parent.find('.map_y_d .axis_d').append('<div>X</div>');
+                    }
+
+                    parent.find('.map_elem_d').css('width', ((j_len)*74) - ((j_len )* 10) + 10 + 'px');
+//                    alert(angular.element('.map_elem_d').css('width', ((j_len)*74) - ((j_len )* 10) + 10 + 'px'));
+//                    alert(((j_len)*74) - ((j_len )* 10) + 10 + 'px');
+                    parent.find('.map_elem_d').css('margin-right','-50000px');
+                    parent.find('.map_x_d').css('width', ((j_len+1)*74) - ((j_len )* 10)  - 13 + 'px');
+                    parent.children(0).css('position', 'relative');
+
+                    angular.element('head').find('style').append(' #'+ $scope.list_id_show_map[i] +' .map_h:after{width: '+ parseInt( 63.64 - ( ($scope.wah[i][1]%$scope.data[$scope.step2_data.section].width) * 100 / $scope.data[$scope.step2_data.section].width * 63.64 / 100  ))  +  'px' + '} #'+ $scope.list_id_show_map[i] + ' .map_h:before{ height: ' +  parseInt( 63.64 - ( ($scope.wah[i][0]%$scope.data[$scope.step2_data.section].height) * 100 / $scope.data[$scope.step2_data.section].height * 63.64 / 100  ))  +  'px' +'}');
+//                    angular.element('head').find('style').append(' #'+ $scope.list_id_show_map[i] +' .map_h:after{width: '+ parseInt( 63.64 - ( ($scope.wah[i][1]%$scope.data[$scope.step2_data.section].width) * 100 / $scope.data[$scope.step2_data.section].width * 63.64 / 100  ))  +  'px' + '}');
+
+
+                    for(j = 0; j < j_len * 2 + 1; j++){
+
+
+                        var row = angular.element('<div>');
+
+                        for(k = 0; k < k_len + 1; k++){
+                            row.append("<div class='map_col_d'>");
+                        }
+                        row.addClass('map_rows_d');
+                        parent.find('.map_elem_d').append(row);
+                    }
+                }
+                else{
+                    var mas_class = ['map_y_p','map_label_p','axis_p', 'map_elem_p','map_x_p','eraser_p', 'map_label_p', 'axis_p'];
+//                    var mas_class = ['map_y_d','map_label_d','axis_d', 'map_elem_d','map_x_d','eraser_d', 'map_label_d', 'axis_d'];
+                    parent.append("<div><div class='" + mas_class[0] + "' ><div class='" + mas_class[1] + "'> Расположить плитку рядами </div><div class='" + mas_class[2] + "'></div></div><div  class='" + mas_class[3] + "'><div class='map_h'></div></div></div><div class='" + mas_class[4] + "'><div class='" + mas_class[5] + "'><div></div></div><div><div class='" + mas_class[6] +"'>Расположить плитку рядами</div><div class='" + mas_class[7] + "'> </div></div></div>");
+                
+                     for(x = 0; x < j_len; x++){
+                        parent.find('.map_x_p .axis_p').append('<div>X</div>');
+                    }
+
+                    for(y = 0; y < k_len; y++){
+                        parent.find('.map_y_p .axis_p').append('<div>X</div>');
+                    }
+                    parent.find('.map_elem_p').css('width', ((j_len)*45) + 'px');
+                    parent.find('.map_elem_p').css('margin-right','-50000px');
+                    parent.find('.map_x_p').css('width', ((j_len)* 45)+ 60 + 'px');
+                    
+
+                    angular.element('head').find('style').append(' #'+ $scope.list_id_show_map[i] +' .map_h:after{width: '+ parseInt( 63.64 - ( ($scope.wah[i][1]%$scope.data[$scope.step2_data.section].width) * 100 / $scope.data[$scope.step2_data.section].width * 63.64 / 100  ))  +  'px' + '} #'+ $scope.list_id_show_map[i] + ' .map_h:before{ height: ' +  parseInt( 63.64 - ( ($scope.wah[i][0]%$scope.data[$scope.step2_data.section].height) * 100 / $scope.data[$scope.step2_data.section].height * 63.64 / 100  ))  +  'px' +'}');
+
+                    for(j = 0; j < j_len; j++){
+
+
+                        var row = angular.element('<div>');
+
+                        for(k = 0; k < k_len; k++){
+                            row.append("<div class='map_col_p'>");
+                        }
+                        row.addClass('map_rows_p');
+                        parent.find('.map_elem_p').append(row);
+                    }
+                
+                
+                
+                
+                
+                
+                }
+                
+
+
+            }
+
+
+
+
+
+
+        } 
+    }
+    //    if(localStorage.getItem('pos') == 1){
+    //        
+    //        $scope.step2_data = JSON.parse(localStorage.getItem('data'));
+    //        $scope.carousel_list = $scope.step2_data.id_series; 
+    //
+    //        $scope.counter_c = 0;
+    //
+    //        $scope.left_carousel = function(){
+    //            if($scope.counter_c > 0){
+    //                var counter  = parseInt(angular.element('.carousel_list > ul').css('left')) -152;
+    //                angular.element('.carousel_list > ul').css({
+    //                    position:'relative',
+    //                    left:parseInt(+154 + parseInt(angular.element('.carousel_list > ul').css('left'))) + 'px'
+    //                });
+    //                $scope.counter_c--; 
+    //            }
+    //        }
+    //        $scope.right_carousel = function(){
+    //            //        alert(angular.element('.carousel_list > ul').children().toArray().length);
+    //            if($scope.counter_c < angular.element('.carousel_list > ul').children().toArray().length-4){
+    //                angular.element('.carousel_list > ul').css({
+    //                    position:'relative',
+    //                    left:parseInt(-154 + parseInt(angular.element('.carousel_list > ul').css('left'))) + 'px'
+    //                });
+    //                $scope.counter_c++;
+    //            }    
+    //        }
+    //    }
+
+    $scope.show_map_v;
+    $scope.show_map = function(v){
+        $scope.counter_c = 0;
+        angular.element('.carousel_list > ul').css({
+            left:0
+        });
+        $scope.carousel_list = function(){
+            if(v == 'f') return $scope.data[$scope.step2_data.section].tiles.floor;
+            return $scope.data[$scope.step2_data.section].tiles.wall;
+        }
+        $scope.show_map_v = v;
+        //        $scope.step2();
+    }
+    if(localStorage.getItem('pos') == 1){
+        $scope.step2();
+    }
 });
