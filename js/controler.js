@@ -1,5 +1,5 @@
 
-calculator.controller('contrCalc', function($scope, dataSeries, formData){
+calculator.controller('contrCalc', function($scope, dataSeries, formData, $timeout){
     //подгрузка всей плитки
     $scope.data = dataSeries;
     //подгрузка всех настроек
@@ -8,9 +8,9 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
     $scope.save_data={};
     //выбранная плитка и подключение ее, если была.
     $scope.data_plitka = {};
-     if(localStorage.getItem('data_plitka') != null) $scope.data_plitka = JSON.parse(localStorage.getItem('data_plitka'));
-//    console.log(JSON.parse(localStorage.getItem('data_plitka')));
-    
+    if(localStorage.getItem('data_plitka') != null) $scope.data_plitka = JSON.parse(localStorage.getItem('data_plitka'));
+    //    console.log(JSON.parse(localStorage.getItem('data_plitka')));
+
     //получаем выбранные параметры из ЛС и меняем все настройки, если нужно.
     $scope.getLS = function(){
 
@@ -36,7 +36,7 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
         $scope.save_data.floor_radio = $scope.getLS().floor_radio;
     }
     if(!angular.isUndefined($scope.getLS().wall_radio )) { 
-        
+
         $scope.formData.wall_radio_s = $scope.getLS().wall_radio;
         $scope.save_data.wall_radio = $scope.getLS().wall_radio;
     }
@@ -45,7 +45,7 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
         $scope.save_data.seam = $scope.getLS().seam;  
     } 
     if($scope.getLS().section != undefined) $scope.formData.id_section = $scope.getLS().section;
-    
+
     //включаем нужные радиобатон
     $scope.select_LS = function(who,value){
         switch(who){
@@ -57,7 +57,7 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
             case 'wall' :
                 if(value == $scope.formData.wall_radio_s){
                     return true; 
-                    
+
                 }
                 break;
             case 'floor' :
@@ -76,7 +76,7 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
     }
     //считает колличество стен по ширине.
     $scope.index_width = 1;
-    
+
     //шаги
     $scope.step = [
         {
@@ -184,23 +184,64 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
             $scope.save_data.section = $scope.formData.id_section;
             $scope.save_data.wall_checked = $scope.wall_checked;
             $scope.save_data.floor_checked = $scope.floor_checked;
-            
+            $scope.save_data.index_width = $scope.index_width;
+            //загоняем в JSON а потом в ЛС
+            var json_data = JSON.stringify($scope.save_data);
+            localStorage.setItem('data', json_data);
         }
-        $scope.save_data.index_width = $scope.index_width;
-        //загоняем в JSON а потом в ЛС
-        var json_data = JSON.stringify($scope.save_data);
-        localStorage.setItem('data', json_data);
+      
         //удаляем сохраненную плитку предыдущую из ЛС и сеток
-        localStorage.removeItem('data_plitka');
+       
         if(localStorage.getItem('data_plitka') != null) $scope.data_plitka = JSON.parse(localStorage.getItem('data_plitka'));
-        $scope.clear_grid('f');
-        $scope.clear_grid('w1');
-        $scope.clear_grid('w2');
-        $scope.clear_grid('w3');
-        $scope.clear_grid('w4');
+        if(localStorage.getItem('pos') ==  0){
+             localStorage.removeItem('data_plitka');
+               $scope.clear_grid('f');
+               $scope.clear_grid('w1');
+               $scope.clear_grid('w2');
+               $scope.clear_grid('w3');
+               $scope.clear_grid('w4');
+        }   
+     
         //запускаем шаг 2 и сохраняем текущею позицию
-        if($scope.formData.pos == 0){
+        if(localStorage.getItem('pos') ==  0 || localStorage.getItem('pos') ==  null ){
             $scope.step2();
+        }
+        //проверка перед переходом на 3 шаг 
+        if($scope.formData.pos == 1){
+                
+               $scope.data_plitka = JSON.parse(localStorage.getItem('data_plitka'));
+//             console.log( $scope.data_plitka);
+                var mas_true =[false,false,false,false,false];
+//                if($scope.step2_data.floor_checked == true)
+                for(elem in $scope.data_plitka){
+                    if($scope.data_plitka[elem] == '') continue;
+                    mas_true[elem.substr(3,1)] = $scope.data_plitka[elem];
+//                    alert(elem[0]);
+                }
+                if($scope.step2_data.floor_checked == true  && mas_true[0] == false  && mas_true[0] == '' ){
+                   alert("Вы не заполнили сетку пола!");
+                    return;
+                } 
+                if($scope.step2_data.wall_checked == true  && mas_true[1] == false  && mas_true[1] == '' ) {
+                    alert("Вы не заполнили сетку стены №1!");
+                    return;
+                }
+                if($scope.step2_data.index_width > 1  && mas_true[2] == false  && mas_true[2] == '' ) {
+                    alert("Вы не заполнили сетку стены №2!");
+                    return;
+                }
+                if($scope.step2_data.index_width > 2  && mas_true[3] == false  && mas_true[3] == '' ) {
+                    alert("Вы не заполнили сетку стены №3!");
+                    return;
+                }
+                if($scope.step2_data.index_width > 3  && mas_true[4] == false  && mas_true[4] == '' ) {
+                    alert("Вы не заполнили сетку стены №4!");
+                    return;
+                }
+              
+            console.log(mas_true);
+//            return;
+           $scope.table_v();
         }
         $scope.formData.pos++;  
         localStorage.setItem('pos', $scope.formData.pos);
@@ -211,13 +252,14 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
         if($scope.formData.pos == 1){
             for( i = 0; i < 6; i++){
                 angular.element("#" + $scope.list_id_show_map[i]).empty();
+//                alert('ddd');
             }
 
         }
         $scope.formData.pos--;
         localStorage.setItem('pos', $scope.formData.pos);
 
-        
+
 
     }
     //макс и мин. стен для кнопки "добавить стену"
@@ -273,7 +315,7 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
             v: $scope.index_width,
             slide: function(event,ui){
                 $('#value_width_wall' + Index.index).val(ui.value);
-//                alert($scope.index_width);
+                //                alert($scope.index_width);
             }
         });
 
@@ -302,7 +344,7 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
             }
         });
     }
-    
+
     //кнопка "начать заново" - все очищает в ЛС и перезагружает сраницу
     $scope.destroy = function(){
         localStorage.removeItem('data');
@@ -356,6 +398,7 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
         }
     });
     //шаг 2
+    $scope.height_grid = [];
     $scope.step2 = function(){
         //получаем все выбранные параметры
         if(!angular.isUndefined(localStorage.getItem('data'))){
@@ -367,11 +410,11 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
             else{
                 $scope.show_map('w');
             }
-         
+
 
             //счетчик плитки на слайдере
             $scope.counter_c = 0;
-            
+
             $scope.left_carousel = function(){
                 if($scope.counter_c > 0){
                     var counter  = parseInt(angular.element('.carousel_list > ul').css('left')) -152;
@@ -393,7 +436,7 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
                 }    
             } 
 
-//            $scope.list_values = [$scope.step2_data.length_floor,$scope.step2_data.width_floor, $scope.step2_data.height_wall,$scope.step2_data.width_wall1,$scope.step2_data.width_wall2,$scope.step2_data.width_wall3,$scope.step2_data.width_wall4,];
+            //            $scope.list_values = [$scope.step2_data.length_floor,$scope.step2_data.width_floor, $scope.step2_data.height_wall,$scope.step2_data.width_wall1,$scope.step2_data.width_wall2,$scope.step2_data.width_wall3,$scope.step2_data.width_wall4,];
             // у нас макс. 5 сеток, а это данные входящие для кажой из них.
             $scope.wah = [
                 [$scope.step2_data.length_floor,$scope.step2_data.width_floor],
@@ -409,13 +452,14 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
 
                 //определяем родителя - текущую сетку и ее входные параметры
                 var parent = angular.element("#" + $scope.list_id_show_map[i]);
+                var name_parent = $scope.list_id_show_map[i];
                 if($scope.wah[i][0]%$scope.data[$scope.step2_data.section].height == 0) {
                     var k_len = Math.ceil($scope.wah[i][0]/$scope.data[$scope.step2_data.section].height) + 1;
                 }
                 else{
                     var k_len = Math.ceil($scope.wah[i][0]/$scope.data[$scope.step2_data.section].height);
                 }
-                
+
                 //получаем число плиток по вертикали и горизонтали
                 if(Math.ceil($scope.wah[i][1]%$scope.data[$scope.step2_data.section].width == 0)){
                     var j_len = Math.ceil($scope.wah[i][1]/$scope.data[$scope.step2_data.section].width) + 1;
@@ -426,7 +470,7 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
 
                 }
                 parent.children(0).css('position', 'relative');
-//                alert(j_len);
+                //                alert(j_len);
                 //разветление на диагональную и прямоугольную сетку
                 if(( i < 1 && $scope.step2_data.floor_radio == 0) || ( i > 0 && $scope.step2_data.wall_radio == 0)){
                     //массив с классами для диагональной сетки и добавление в родителя
@@ -436,21 +480,82 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
 
                     //постройка крестиков на строчках и стовпцах 
                     for(x = 0; x < j_len*2; x++){
-                        parent.find('.map_x_d .axis_d').append('<div>X</div>');
+                        var x_d = angular.element('<div>X</div>');
+                        x_d.attr('data-index', x);
+                        x_d.on('click', function(event){
+                            var parent_rows_y_d =  angular.element(angular.element('.map_rows_d').toArray()[angular.element(event.target).attr('data-index')]);
+                            parent_rows_y_d.children().css({
+                                'background-image' : "none",
+                                'background-size' : 'cover'
+                            });
+
+                            for(i = 0; i < angular.element(parent_rows_y_d).children().length; i++){
+                                var data_id = angular.element(parent_rows_y_d).children().eq(i).attr('data-id');
+                                $scope.data_plitka["'" + data_id + "'"] = '';
+                                
+                                
+                            }
+                            localStorage.setItem('data_plitka', JSON.stringify($scope.data_plitka));
+                    
+                        
+                        });
+                        parent.find('.map_x_d .axis_d').append(x_d);
+//                        parent.find('.map_x_d .axis_d').append('<div>X</div>');
                     }
 
                     for(y = 0; y < k_len*2; y++){
-                        parent.find('.map_y_d .axis_d').append('<div>X</div>');
+//                        parent.find('.map_y_d .axis_d').append('<div>X</div>');
+                        
+                        
+                        var y_d = angular.element('<div>X</div>');
+                        y_d.attr('data-index', y);
+                        y_d.on('click', function(event){
+                        
+                          
+                          var k = +angular.element(event.target).attr('data-index');
+                            var now_parent = angular.element(event.target).parent().parent().parent().parent().attr('id');
+//                            alert(now_parent);
+                          var parent_rows_x_d;
+                          //создаем и вешаем на крестики слушатели "удаления рядков и столбцев"
+                          if(k%2){
+                               parent_rows_x_d = angular.element('#' + now_parent + ' .map_rows_d:nth-child(odd) > .map_col_d:nth-child('+ parseInt((k/2) + 1) + ')').toArray();
+                          }
+                          else{
+                                parent_rows_x_d = angular.element('#' + now_parent + ' .map_rows_d:nth-child(even) > .map_col_d:nth-child('+ parseInt((k/2) + 1) + ')').toArray();
+                          }
+                        
+                            for(i = 0; i < parent_rows_x_d.length; i++){
+                                
+                                angular.element(parent_rows_x_d[i]).css({
+                                'background-image' : "none",
+                                'background-size' : 'cover'
+                                });
+                                var data_id = angular.element(parent_rows_x_d[i]).attr('data-id');
+                                $scope.data_plitka["'" + data_id + "'"] = '';
+
+                                
+                            }  
+                          
+                          localStorage.setItem('data_plitka', JSON.stringify($scope.data_plitka));
+                            });
+                     
+                          parent.find('.map_y_d .axis_d').append(y_d);
+                        
+                      
+                        
+                        
+                        
                     }
                     //ширина сетки
                     parent.find('.map_elem_d').css('width', ((j_len)*64) + 10 + 'px');
-//                    alert(angular.element('.map_elem_d').css('width', ((j_len)*74) - ((j_len )* 10) + 10 + 'px'));
-//                    alert(((j_len)*74) - ((j_len )* 10) + 10 + 'px');
+                    //                    alert(angular.element('.map_elem_d').css('width', ((j_len)*74) - ((j_len )* 10) + 10 + 'px'));
+                    //                    alert(((j_len)*74) - ((j_len )* 10) + 10 + 'px');
                     parent.find('.map_elem_d').css('margin-right','-50000px');
                     //ширина по х
                     parent.find('.map_x_d').css('width', ((j_len+1)*74) - ((j_len )* 10)  - 13 + 'px');
                     parent.children(0).css('position', 'relative');
-//                    alert(((j_len)*74) - ((j_len )* 10) + 10);
+                    //                    alert(((j_len)*74) - ((j_len )* 10) + 10);
+                    $scope.height_grid[i] = k_len * 63.64 + 250 + 'px';
                     //вычисление штриховки
                     angular.element('head').find('style').append(' #'+ $scope.list_id_show_map[i] +' .map_h:after{width: '+ parseInt( 63.64 - ( ($scope.wah[i][1]%$scope.data[$scope.step2_data.section].width) * 100 / $scope.data[$scope.step2_data.section].width * 63.64 / 100  ))  +  'px' + '} #'+ $scope.list_id_show_map[i] + ' .map_h:before{ height: ' +  parseInt( 63.64 - ( ($scope.wah[i][0]%$scope.data[$scope.step2_data.section].height) * 100 / $scope.data[$scope.step2_data.section].height * 63.64 / 100  ))  +  'px' +'}');
 
@@ -462,38 +567,42 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
                         var row = angular.element('<div>');
 
                         for(k = 0; k < k_len + 1; k++){
-                                 var elem_div = angular.element('<div>');
+                            var elem_div = angular.element('<div>');
                             elem_div.addClass('map_col_d');
+                            child_elem = angular.element('<div>');
+                            child_elem.addClass('child_d');
+                            
                             //опозновательный атрибут
-                             elem_div.attr('data-id', 'id'+ i + j + k);
+                            elem_div.attr('data-id', 'id'+ i + j + k);
                             //рисуем в нем картинку, если была в ЛС
                             if($scope.data_plitka["'id" + i + j + k + "'"] != null){
-//                                alert('d');
-                                    elem_div.css({
-                                       'background-image' : "url('"+ $scope.data_plitka["'id" + i + j + k + "'"] + "')",
-                                        'background-size' : 'cover'
-                                    }); 
+                                //                                alert('d');
+                                elem_div.css({
+                                    'background-image' : "url('"+ $scope.data_plitka["'id" + i + j + k + "'"][1] + "')",
+                                    'background-size' : 'cover'
+                                }); 
                             }
-                            //вешаем .droppable на каждый див.
-                             $(elem_div).droppable({
+                               //вешаем .droppable на каждый див.
+                            $(child_elem).droppable({
                                 drop: function(event, ui){
-                                    
+
                                     console.log(angular.element(ui.draggable)); 
-//                                    console.log(angular.element(event.target)); 
-                                    angular.element(event.target).css({
-                                       'background-image' : "url('"+ angular.element(ui.draggable[0]).prev().attr('src') + "')",
+                                    //                                    console.log(angular.element(event.target)); 
+                                    angular.element(event.target).parent().css({
+                                        'background-image' : "url('"+ angular.element(ui.draggable[0]).prev().attr('src') + "')",
                                         'background-size' : 'cover'
                                     }); 
-                                    $scope.data_plitka["'" + angular.element(event.target).attr('data-id') + "'"] = angular.element(ui.draggable[0]).prev().attr('src');
+                                    $scope.data_plitka["'" + angular.element(event.target).parent().attr('data-id') + "'"] =[angular.element(ui.draggable[0]).prev().attr('data-id'), angular.element(ui.draggable[0]).prev().attr('src'), angular.element(ui.draggable[0]).prev().attr('data-price')];
                                     localStorage.setItem('data_plitka', JSON.stringify($scope.data_plitka));
-//                                    alert(angular.element(ui.draggable[0]).prev().attr('src')); 
-                                 
+                                    //                                    alert(angular.element(ui.draggable[0]).prev().attr('src')); 
+
                                 },
                                 hoverClass:'hover_d',
                                 accept: '.drag, .eraser_d > div'
-                                
+
                             });   
-                            
+                            elem_div.append(child_elem);
+                           
                             row.append(elem_div);
                         }
                         row.addClass('map_rows_d');
@@ -509,18 +618,71 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
                 else{
                     var mas_class = ['map_y_p','map_label_p','axis_p', 'map_elem_p','map_x_p','eraser_p', 'map_label_p', 'axis_p'];
                     parent.append("<div><div class='" + mas_class[0] + "' ><div class='" + mas_class[1] + "'> Расположить плитку рядами </div><div class='" + mas_class[2] + "'></div></div><div  class='" + mas_class[3] + "'><div class='map_h'></div></div></div><div class='" + mas_class[4] + "'><div class='" + mas_class[5] + "'><div></div></div><div><div class='" + mas_class[6] +"'>Расположить плитку рядами</div><div class='" + mas_class[7] + "'> </div></div></div>");
-                
-                     for(x = 0; x < j_len; x++){
-                        parent.find('.map_x_p .axis_p').append('<div>X</div>');
+
+                    for(x = 0; x < j_len; x++){
+                        var x_p = angular.element('<div>X</div>');
+                        x_p.attr('data-index', x);
+                        x_p.on('click', function(event){
+                              var now_parent = angular.element(event.target).parent().parent().parent().parent().attr('id');
+//                            var parent_rows_y_p =  angular.element(angular.element('#' + now_parent + '.map_rows_p').toArray()[angular.element(event.target).attr('data-index')]);
+//                            alert(angular.element(event.target).attr('data-index'));
+                            var parent_rows_y_p =  angular.element('#' + now_parent + ' div.map_rows_p:nth-child(' + (+angular.element(event.target).attr('data-index')+2)  +  ')');
+//                            console.log(parent_rows_y_p);
+                            parent_rows_y_p.children().css({
+                                'background-image' : "none",
+                                'background-size' : 'cover'
+                            });
+
+                            for(i = 0; i < angular.element(parent_rows_y_p).children().length; i++){
+                                var data_id = angular.element(parent_rows_y_p).children().eq(i).attr('data-id');
+                                $scope.data_plitka["'" + data_id + "'"] = '';
+                                
+                                
+                            }
+                            localStorage.setItem('data_plitka', JSON.stringify($scope.data_plitka));
+                    
+                        
+                        });
+                        parent.find('.map_x_p .axis_p').append(x_p);
                     }
 
                     for(y = 0; y < k_len; y++){
-                        parent.find('.map_y_p .axis_p').append('<div>X</div>');
+//                        parent.find('.map_y_p .axis_p').append('<div>X</div>');
+                        var y_p = angular.element('<div>X</div>');
+                        y_p.attr('data-index', y);
+                        y_p.on('click', function(event){
+                        
+                          
+                          var k = +angular.element(event.target).attr('data-index');
+                       
+//                        alert(name_parent);
+                          //создаем и вешаем на крестики слушатели "удаления рядков и столбцев"
+                        var now_parent = angular.element(event.target).parent().parent().parent().parent().attr('id');
+//                            alert(now_parent);
+                            var    parent_rows_x_p = angular.element('#' + now_parent + ' .map_rows_p > .map_col_p:nth-child('+ (k+1) + ')').toArray();
+                        
+                        
+                            for(i = 0; i < parent_rows_x_p.length; i++){
+                                
+                                angular.element(parent_rows_x_p[i]).css({
+                                'background-image' : "none",
+                                'background-size' : 'cover'
+                                });
+                                var data_id = angular.element(parent_rows_x_p[i]).attr('data-id');
+                                $scope.data_plitka["'" + data_id + "'"] = '';
+
+                                
+                            }  
+                          
+                          localStorage.setItem('data_plitka', JSON.stringify($scope.data_plitka));
+                            });
+                     
+                          parent.find('.map_y_p .axis_p').append(y_p);
                     }
                     parent.find('.map_elem_p').css('width', ((j_len)*45) + 'px');
                     parent.find('.map_elem_p').css('margin-right','-50000px');
                     parent.find('.map_x_p').css('width', ((j_len)* 45)+ 60 + 'px');
-                    
+                    $scope.height_grid[i] = k_len * 45 + 250 + 'px';
 
                     angular.element('head').find('style').append(' #'+ $scope.list_id_show_map[i] +' .map_h:after{width: '+ parseInt( 45 - ( ($scope.wah[i][1]%$scope.data[$scope.step2_data.section].width) * 100 / $scope.data[$scope.step2_data.section].width * 45 / 100  ))  +  'px' + '} #'+ $scope.list_id_show_map[i] + ' .map_h:before{ height: ' +  parseInt( 45 - ( ($scope.wah[i][0]%$scope.data[$scope.step2_data.section].height) * 100 / $scope.data[$scope.step2_data.section].height * 45 / 100  ))  +  'px' +'}');
 
@@ -533,15 +695,15 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
                             var elem_div = angular.element('<div>');
                             elem_div.addClass('map_col_p');
                             elem_div.attr('data-id', 'id'+ i + j + k);
-                         
-                            if($scope.data_plitka["'id" + i + j + k + "'"] != null){
-//                                alert('d');
-                                    elem_div.css({
-                                       'background-image' : "url('"+ $scope.data_plitka["'id" + i + j + k + "'"] + "')",
-                                        'background-size' : 'cover'
-                                    }); 
+
+                            if($scope.data_plitka != null && $scope.data_plitka["'id" + i + j + k + "'"] != null){
+                                //                                alert('d');
+                                elem_div.css({
+                                    'background-image' : "url('"+ $scope.data_plitka["'id" + i + j + k + "'"][1] + "')",
+                                    'background-size' : 'cover'
+                                }); 
                             }
-                             $(elem_div).droppable({
+                            $(elem_div).droppable({
                                 hoverClass:'hover_d',
                                 accept: 'drag',
                                 drop: function(event, ui){
@@ -549,18 +711,18 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
                                     console.log(angular.element(ui.draggable)); 
 
                                     angular.element(event.target).css({
-                                       'background-image' : "url('"+ angular.element(ui.draggable[0]).prev().attr('src') + "')",
+                                        'background-image' : "url('"+ angular.element(ui.draggable[0]).prev().attr('src') + "')",
                                         'background-size' : 'cover'
                                     });
-                                    $scope.data_plitka["'" + angular.element(event.target).attr('data-id') + "'"] = angular.element(ui.draggable[0]).prev().attr('src');
+                                    $scope.data_plitka["'" + angular.element(event.target).attr('data-id') + "'"] =[angular.element(ui.draggable[0]).prev().attr('data-id'), angular.element(ui.draggable[0]).prev().attr('src'), angular.element(ui.draggable[0]).prev().attr('data-price')];
                                     localStorage.setItem('data_plitka', JSON.stringify($scope.data_plitka));
-                                    
+
                                 },
                                 hoverClass:'hover_d',
                                 accept: '.drag, .eraser_p > div'
-                              
+
                             });   
-                            
+
                             row.append(elem_div);
 
                         }
@@ -568,28 +730,49 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
                         parent.find('.map_elem_p').append(row);
                     }
 
-                
-                 angular.element('.eraser_p').children(0).draggable({
+
+                    angular.element('.eraser_p').children(0).draggable({
                         revert: true,
                         zIndex: 20
                     });
                 }
-                 
-                
+
+//alert($scope.height_grid[i]);
 
             }
 
 
 
 
-
+            
 
         } 
+        if($scope.step2_data.floor_checked == true) {
+            $scope.show_map('f');
+        }
+        else{
+            $scope.show_map('w1');
+
+        }
     }
-  
+
+
     //отображаем нужную сетку и влючаем ее
     $scope.show_map_v;
     $scope.show_map = function(v){
+        var mas = {
+            'f': 0,  
+            'w1': 1,  
+            'w2': 2,  
+            'w3': 3,  
+            'w4': 4  
+        };
+        var cl = angular.element('.carousel_list');
+
+        cl.css({
+            'height' : $scope.height_grid[mas[v]]
+        });       
+        
         $scope.counter_c = 0;
         angular.element('.carousel_list > ul').css({
             left:0
@@ -599,33 +782,81 @@ calculator.controller('contrCalc', function($scope, dataSeries, formData){
             return $scope.data[$scope.step2_data.section].tiles.wall;
         }
         $scope.show_map_v = v;
-  
+
     }
     //очистка текущей сетки из ЛС и сетки
     $scope.clear_grid = function(val){
         var mas = {
-          'f': 0,  
-          'w1': 1,  
-          'w2': 2,  
-          'w3': 3,  
-          'w4': 4  
+            'f': 0,  
+            'w1': 1,  
+            'w2': 2,  
+            'w3': 3,  
+            'w4': 4  
         };
         for(var elem in $scope.data_plitka){
             if(elem.substr(3, 1) == mas[val]) {
                 $scope.data_plitka[elem] = '';
                 var id = elem.substring(1, elem.length-1); 
-              $("[data-id = " + id + "]").css({
-                  'background-image' : 'url()'
-              });
+                $("[data-id = " + id + "]").css({
+                    'background-image' : 'url()'
+                });
             }
         }
         localStorage.setItem('data_plitka' , JSON.stringify($scope.data_plitka));
-        
+
     }
     // на случай если перезагрузить странциу на шаге 2
     if(localStorage.getItem('pos') == 1){
         $scope.step2();
     }
+  
+    $scope.summ_price;
+    $scope.table_v = function(){
+        $scope.summ_price = 0;
+        $scope.mas_table = {};
+        $scope.data_plitka = JSON.parse(localStorage.getItem('data_plitka'));
+        for(elem in $scope.data_plitka){
+            if($scope.data_plitka[elem][0] == '' || $scope.data_plitka[elem][0] == null) continue;
+//            mas_table[$scope.data_plitka[elem][0]]['src'] = $scope.data_plitka[elem][1];
+//            mas_table[$scope.data_plitka[elem][0]]['price'] = 10;
+//            mas_table[$scope.data_plitka[elem][0]]['count'] = mas_table[$scope.data_plitka[elem][0]]['count'] + 1 ;
+            $scope.summ_price = $scope.summ_price +  +$scope.data_plitka[elem][2];
+            if(  $scope.data_plitka[elem][0] in $scope.mas_table)  {
+                  $scope.mas_table[$scope.data_plitka[elem][0]].count++;
+             }else{
+//                  $scope.mas_table[$scope.data_plitka[elem][0]].count = 0;
+                 $scope.mas_table[$scope.data_plitka[elem][0]] = 
+                {
+                        name: $scope.data_plitka[elem][0],
+                        price: $scope.data_plitka[elem][2],
+                        src: $scope.data_plitka[elem][1],
+                        count: 1     
+                
+                };
+             }
+            
+//                $scope.mas_table[$scope.data_plitka[elem][0]].count++;
+            
+            
+           
+        }
+//        console.log($scope.mas_table);
+//        return $scope.mas_table;
+    }
     
-    
+       if(localStorage.getItem('pos') == 2){
+        $scope.step2();
+         $scope.table_v();
+    }
 });
+
+//calculator.directive("repeatEnd", function(){
+//    return {
+//        restrict: "A",
+//        link: function(scope, element, attrs){
+//            if(scope.$last){
+//                scope.$eval(attrs.repeatEnd);
+//            }
+//        }
+//    }
+//});
